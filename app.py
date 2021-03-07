@@ -88,20 +88,6 @@ def remove():
         form=SearchForm(request.form), userratings=user_ratings
     )
 
-#may as well write a real logger here
-def mylog(user_ratings, id_ratings, neighbor_id, recommended_movies):
-    fname = datetime.datetime.now().strftime('%m_%d_%H_%M')
-    with open('/Users/ryanbusby/Desktop/%s' % fname, 'w') as f:
-        f.write('USER INPUTS:\n')
-        for k, v in user_ratings.items():
-            f.write(f'{k}:{v}\n')
-        for k, v in id_ratings.items():
-            f.write(f'{k}:{v}\n')
-        f.write('NEAREST NEIGHBOR: %s\n' % neighbor_id)
-        f.write('RECOMMENDED MOVIES:\n')
-        for m in recommended_movies:
-            f.write(m+'\n')
-
 
 @app.route('/makeRecommendations', methods=["POST"])
 def makeRecommendations():
