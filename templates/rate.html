@@ -1,0 +1,13 @@
+{% extends 'layouts/main.html' %}
+{% block content %}
+<br>
+  <h4 class='font-weight-lighter'>{{ movie }}</h4>
+<br>
+  <form action="{{ url_for('movies') }}" method="POST">
+      <button name="rating" value="1" class='btn btn-outline-secondary font-weight-lighter'>1</button>
+      <button name="rating" value="2" class='btn btn-outline-secondary font-weight-lighter'>2</button>
+      <button name="rating" value="3" class='btn btn-outline-secondary font-weight-lighter'>3</button>
+      <button name="rating" value="4" class='btn btn-outline-secondary font-weight-lighter'>4</button>
+      <button name="rating" value="5" class='btn btn-outline-secondary font-weight-lighter'>5</button>
+  </form>
+{% endblock %}

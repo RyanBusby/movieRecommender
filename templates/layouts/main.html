@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+      content="width=device-width,initial-scale=1">
+    <title>
+      {% block title %}
+      {% endblock %}
+    </title>
+    <link rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet"
+      href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand"
+          href="{{ url_for( 'index' ) }}">
+          <h2>🍿
+            <small>
+              <small class='font-weight-lighter'>
+              movie recommender
+              </small>
+            </small>
+          </h2>
+        </a>
+    </nav>
+    <main id="content"
+      role="main"
+      class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <script type="text/javascript"
+      src="http://code.jquery.com/jquery-latest.js">
+    </script>
+    <script type="text/javascript"
+      src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js">
+    </script>
+    <script type="text/javascript"
+      src="{{ url_for('static', filename='js/form.js') }}">
+    </script>
+  </body>
+</html>

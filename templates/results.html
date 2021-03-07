@@ -1,0 +1,15 @@
+{% extends 'layouts/main.html' %}
+{% block content %}
+<br>
+<h4 class='font-weight-lighter'>your recommendations</h4>
+<br>
+<table class="table table-striped">
+  <tbody>
+    {% for movie in movies %}
+    <tr>
+      <th class='font-weight-lighter'>{{ movie }}</th>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
