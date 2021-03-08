@@ -1,7 +1,7 @@
 {% extends 'layouts/main.html' %}
 {% block content %}
 <br>
-  <h3 class='font-weight-lighter'>rate some movies ... </h3>
+  <h4 class='font-weight-lighter'>rate some movies ... </h4>
   <br>
   <form class='font-weight-lighter form-inline' action="{{ url_for('submitRating') }}" method="POST">
   {{ form.autocomp.label(class_="mr-2") }}

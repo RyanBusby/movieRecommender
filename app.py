@@ -4,7 +4,7 @@ os.environ['PYSPARK_PYTHON'] = sys.executable
 import json
 import datetime
 
-from flask import Flask, Response, request, session, render_template
+from flask import Flask, Response, request, session, render_template, flash
 from wtforms import Form, TextField, SubmitField
 
 from engine import Engine
@@ -36,8 +36,7 @@ def index():
     session['userratings'] = {}
     return render_template(
         'index.html',
-        form=SearchForm(request.form),
-        user_ratings=session.get('userratings')
+        form=SearchForm(request.form)
     )
 
 @app.route('/submitRating', methods=['POST'])
@@ -45,8 +44,9 @@ def submitRating():
     movie = str(request.form['autocomp'])
     session['movie'] = movie
     if movie not in movie_dict.options:
+        flash('select movie from dropdown', 'info')
         return render_template(
-            'index.html',
+            'movies.html',
             form=SearchForm(request.form),
             userratings=session.get('userratings')
         )
@@ -80,27 +80,21 @@ def remove():
     remove_movie = request.form['remove_movie']
     user_ratings = session.get('userratings')
     del user_ratings[remove_movie]
+    # what about `del session.get('userratings')[remove_movie]`
 
     #remove from id ratings
     remove_id = str(movie_dict.options[remove_movie])
     id_ratings = session.get('idratings')
     del id_ratings[remove_id]
 
-    # should this be happening in /movies?
     session['idratings'] = id_ratings
     session['userratings'] = user_ratings
 
-    if len(user_ratings) > 0:
-        return render_template(
-            'movies.html',
-            form=SearchForm(request.form),
-            userratings=user_ratings
-        )
-    else:
-        return render_template(
-            'index.html',
-            form=SearchForm(request.form)
-        )
+    return render_template(
+        'movies.html',
+        form=SearchForm(request.form),
+        userratings=user_ratings
+    )
 
 
 @app.route('/makeRecommendations', methods=["POST"])

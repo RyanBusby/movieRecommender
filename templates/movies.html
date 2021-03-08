@@ -1,14 +1,24 @@
 {% extends 'layouts/main.html' %}
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }}" role="alert">
+        <strong>{{ msg }}</strong>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 <br>
-<h4 class='font-weight-lighter'>rate another movie ... </h4>
+<h4 class='font-weight-lighter'>rate some movies ... </h4>
+<br>
 <form class='font-weight-lighter form-inline' action="{{ url_for('submitRating') }}" method="POST">
   {{ form.autocomp.label(class_="mr-2") }}
   {{ form.autocomp(class_="font-weight-lighter mr-2") }}
   {{ form.submit(class_="btn btn-outline-secondary btn-sm font-weight-light") }}
 </form>
+{% if userratings|length > 0 %}
 <br>
-
 <table class="table table-hover">
   <tbody>
     {% for key, value in userratings.items() %}
@@ -30,4 +40,5 @@
 <form action="{{ url_for('makeRecommendations') }}" method="POST">
   <input type="submit" class="btn btn-secondary font-weight-lighter" value="get recommendations"/>
 </form>
+{% endif %}
 {% endblock %}
