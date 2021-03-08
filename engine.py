@@ -62,8 +62,7 @@ class Engine():
         ]
         return movie_ids
 
-    def cosine_neighbor(user_inputs):
-        user_inputs = Vectors.sparse(17771, user_inputs)
+    def cosine_neighbor(self, user_inputs):
         neighbors = self.hash_model.approxNearestNeighbors(
             self.user_ratings_df,
             user_inputs,
@@ -74,7 +73,6 @@ class Engine():
         return neighbors[0].id
 
     def jaccard_neighbor(self, user_inputs, thresh):
-        user_inputs = Vectors.sparse(17771, user_inputs)
         user_id = 2649429
         rec_user = self.sc.parallelize([(user_id, user_inputs)])
         rec_user_df = self.spark.createDataFrame(

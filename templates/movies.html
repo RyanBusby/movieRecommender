@@ -8,22 +8,25 @@
   {{ form.submit(class_="btn btn-outline-secondary btn-sm font-weight-light") }}
 </form>
 <br>
-  <table class="table table-striped">
-  <tbody>
-  {% for key, value in userratings.items() %}
-    <tr>
-      <td class='font-weight-lighter'> {{ key }} </td>
-      <td class='font-weight-lighter'> {{ value }} </td>
-      <td>
-        <form action="{{ url_for('remove') }}" method="POST">
-          <button name="remove_movie" value="{{ key }}" class="btn btn-outline-secondary btn-sm">&cross;</button>
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
 
-</tbody>
+<table class="table table-hover">
+  <tbody>
+    {% for key, value in userratings.items() %}
+      <tr>
+        <td class='font-weight-lighter' style="width: 90%"> {{ key }} </td>
+        <td class='font-weight-lighter' style="width: 5%"> {{ value }} </td>
+        <td style="width: 5%">
+          <form action="{{ url_for('remove') }}" method="POST">
+            <button name="remove_movie" value="{{ key }}" class="btn btn-secondary btn-sm">
+              &cross;
+            </button>
+        </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>
+
 <form action="{{ url_for('makeRecommendations') }}" method="POST">
   <input type="submit" class="btn btn-secondary font-weight-lighter" value="get recommendations"/>
 </form>

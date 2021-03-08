@@ -36,7 +36,8 @@ def index():
     session['userratings'] = {}
     return render_template(
         'index.html',
-        form=SearchForm(request.form)
+        form=SearchForm(request.form),
+        user_ratings=session.get('userratings')
     )
 
 @app.route('/submitRating', methods=['POST'])
@@ -45,7 +46,7 @@ def submitRating():
     session['movie'] = movie
     if movie not in movie_dict.options:
         return render_template(
-            'movies.html',
+            'index.html',
             form=SearchForm(request.form),
             userratings=session.get('userratings')
         )
@@ -61,11 +62,17 @@ def movies():
     movie_id = int(movie_dict.options[movie])
     id_ratings[movie_id] = rating
     session['movie'] = None
-    return render_template(
-        'movies.html',
-        form=SearchForm(request.form),
-        userratings=user_ratings
-    )
+    if len(user_ratings) > 0:
+        return render_template(
+            'movies.html',
+            form=SearchForm(request.form),
+            userratings=user_ratings
+        )
+    else:
+        return render_template(
+            'index.html',
+            form=SearchForm(request.form)
+        )
 
 @app.route('/remove', methods=["POST"])
 def remove():
@@ -83,10 +90,17 @@ def remove():
     session['idratings'] = id_ratings
     session['userratings'] = user_ratings
 
-    return render_template(
-        'movies.html',
-        form=SearchForm(request.form), userratings=user_ratings
-    )
+    if len(user_ratings) > 0:
+        return render_template(
+            'movies.html',
+            form=SearchForm(request.form),
+            userratings=user_ratings
+        )
+    else:
+        return render_template(
+            'index.html',
+            form=SearchForm(request.form)
+        )
 
 
 @app.route('/makeRecommendations', methods=["POST"])
