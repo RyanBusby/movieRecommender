@@ -20,7 +20,8 @@ class Parser():
         if self.sample:
             df = self.spark.read.csv(
                 '../data/sample.csv',
-                schema=schema
+                schema=schema,
+                header=True
             )
             return df
         fnames = [
@@ -65,6 +66,12 @@ class Parser():
         return to_spark
 
     def make_sparse(self, df):
+        '''
+        to get the length of the vector:
+        from pyspark.sql import functions as F
+        vector_len = df.agg(F.max('item')).collect()[0]['max(item)']+1
+        '''
+        vector_len = 17771
         return self.spark.createDataFrame(
             df.rdd.map(
                 lambda x: (x.user, [(x.item, x.rating)])
@@ -73,7 +80,7 @@ class Parser():
                 lambda x, y: x + y
             )\
             .map(
-                lambda x: (x[0], SparseVector(17771, x[1]))
+                lambda x: (x[0], SparseVector(vector_len, x[1]))
             ),
             ['user', 'features']
         )

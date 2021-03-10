@@ -63,6 +63,8 @@ model.save('../models/als_%s' % rmse)
 
 # save minhash
 df = parser.make_sparse(df)
+df.rdd.saveAsPickleFile('../data/sparse_matrix_fromSample')
+
 mh = MinHashLSH()
 mh.setInputCol('features')
 mh.setOutputCol('hashes')

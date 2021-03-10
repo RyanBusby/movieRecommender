@@ -1,7 +1,8 @@
 import pyspark as ps
 from pyspark.ml.feature import MinHashLSHModel
 from pyspark.ml.recommendation import ALSModel
-from pyspark.ml.linalg import SparseVector, Vectors
+from pyspark.ml.linalg import SparseVector
+from pyspark.sql.functions import col
 
 class Engine():
     def __init__(self):
@@ -29,22 +30,14 @@ class Engine():
         )
 
     def make_recommendations(self, id_ratings):
-        '''
-        TODO: since cosine (approxNearestNeighbor) does not take into account magnitude only direction, take that part out.
-        Jaccarddistance max is .5 - change the parameter in the method call of the model here to .6
-        also, sort the result to get the closest neighbor!
-        '''
-
-
         id_ratings = {
             int(key): value for key, value in id_ratings.items()
         }
-        user_inputs = Vectors.sparse(
-            17771, id_ratings
-        )
+        user_inputs = SparseVector(17771, id_ratings)
 
-        neighbor = self.get_neighbor(user_inputs)
+        neighbor = self.jaccard_neighbor(user_inputs)
         if not neighbor:
+            # return popular movies
             return None
 
         # create a df for model to make recommendations
@@ -69,48 +62,38 @@ class Engine():
         ]
         return movie_ids
 
-    def cosine_neighbor(self, user_inputs):
-        neighbors = self.hash_model.approxNearestNeighbors(
-            self.user_ratings_df,
-            user_inputs,
-            1)\
-        .collect()
-        if len(neighbors) == 0:
-            return None
-        return neighbors[0].id
-
-    def jaccard_neighbor(self, user_inputs, thresh):
+    def jaccard_neighbor(self, user_inputs):
+        '''
+        to get user_id:
+        from pyspark.sql import functions as F
+        user_id =\
+        self.user_ratings_df.agg(F.max('id')).collect()[0]['max(id)']+1
+        '''
         user_id = 2649429
         rec_user = self.sc.parallelize([(user_id, user_inputs)])
         rec_user_df = self.spark.createDataFrame(
             rec_user,
             ['id','features']
         )
-        distances = self.hash_model.approxSimilarityJoin(
-            self.user_ratings_df,
-            rec_user_df,
-            thresh
-        )
-        if len(distances.take(1)) == 0:
+        try:
+            return self.hash_model.approxSimilarityJoin(
+                self.user_ratings_df,
+                rec_user_df,
+                .6,
+                distCol='JaccardDistance'
+            )\
+            .select(
+                col('datasetA.id').alias('neighbor'),
+                col('JaccardDistance')
+            )\
+            .orderBy(
+                col('JaccardDistance')
+            )\
+            .first().neighbor
+
+        except AttributeError:
+            '''
+            file_logger.warning('user didn't match with any training data')
+            approxSimilarityJoin returns no result - no neighbor - sus
+            '''
             return None
-        return distances.filter(
-            distances.distCol==distances.agg(
-                F.min(distances.distCol)
-            ).first()[0]
-        )\
-        .first()\
-        .datasetA\
-        .id
-
-    def run_jaccard(self, user_inputs):
-        for thresh in [1, 1.2, 1.4, 2, 3, 10]:
-            neighbor = self.jaccard_neighbor(user_inputs, thresh)
-            if neighbor:
-                return neighbor
-        return neighbor
-
-    def get_neighbor(self, user_inputs):
-        neighbor = self.cosine_neighbor(user_inputs)
-        if not neighbor:
-            neighbor = self.run_jaccard(user_inputs)
-        return neighbor
