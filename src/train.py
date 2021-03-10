@@ -63,7 +63,8 @@ model.save('../models/als_%s' % rmse)
 
 # save minhash
 df = parser.make_sparse(df)
-df.rdd.saveAsPickleFile('../data/sparse_matrix_fromSample')
+df.saveAsPickleFile('../data/sparse_matrix_fromSample')
+df = parser.spark.createDataFrame(df, ['user', 'features'])
 
 mh = MinHashLSH()
 mh.setInputCol('features')

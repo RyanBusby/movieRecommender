@@ -67,20 +67,17 @@ class Parser():
 
     def make_sparse(self, df):
         '''
-        to get the length of the vector:
+        # to get the length of the vector:
         from pyspark.sql import functions as F
         vector_len = df.agg(F.max('item')).collect()[0]['max(item)']+1
         '''
         vector_len = 17771
-        return self.spark.createDataFrame(
-            df.rdd.map(
-                lambda x: (x.user, [(x.item, x.rating)])
-            )\
-            .reduceByKey(
-                lambda x, y: x + y
-            )\
-            .map(
-                lambda x: (x[0], SparseVector(vector_len, x[1]))
-            ),
-            ['user', 'features']
+        return df.rdd.map(
+            lambda x: (x.user, [(x.item, x.rating)])
+        )\
+        .reduceByKey(
+            lambda x, y: x + y
+        )\
+        .map(
+            lambda x: (x[0], SparseVector(vector_len, x[1]))
         )
