@@ -29,6 +29,13 @@ class Engine():
         )
 
     def make_recommendations(self, id_ratings):
+        '''
+        TODO: since cosine (approxNearestNeighbor) does not take into account magnitude only direction, take that part out.
+        Jaccarddistance max is .5 - change the parameter in the method call of the model here to .6
+        also, sort the result to get the closest neighbor!
+        '''
+
+
         id_ratings = {
             int(key): value for key, value in id_ratings.items()
         }
